@@ -5,8 +5,75 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DataGrid.DragDrop.SampleProblem"
         mc:Ignorable="d"
+        xmlns:dd="urn:gong-wpf-dragdrop"
+
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+    <Window.DataContext>
+        <local:Vm />
+    </Window.DataContext>
+
+    <StackPanel>
+        <CheckBox Name="Advanced"
+                  IsChecked="{Binding Field.IsAdvanced, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                  DockPanel.Dock="Top"
+                  HorizontalAlignment="Left"
+                  ToolTip="When checked, provides additional advanced mapping options."
+                  Height="28" Width="100">
+            Advanced
+            <CheckBox.Style>
+                <Style TargetType="{x:Type CheckBox}"
+                       BasedOn="{StaticResource {x:Type CheckBox}}">
+                    <Style.Triggers>
+                        <DataTrigger
+                            Binding="{Binding Field.IsAdvanced, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                            Value="True">
+                            <Setter Property="CheckBox.IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </CheckBox.Style>
+        </CheckBox>
+        <DataGrid
+            DataContext="{Binding Field.FileFields, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+            ItemsSource="{Binding Path=., Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+            AutoGenerateColumns="False"
+            CanUserReorderColumns="False"
+            CanUserSortColumns="False"
+            SelectionUnit="FullRow"
+            CanUserAddRows="{Binding IsChecked, ElementName=Advanced}"
+            EnableColumnVirtualization="False"
+            Name="FileFieldDataGrid"
+            SelectionMode="Single"
+            dd:DragDrop.IsDragSource="True"
+            dd:DragDrop.IsDropTarget="True">
+            <DataGrid.Columns>
+
+                <DataGridTemplateColumn Header="Source Field Name">
+
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Width="200"
+                                       HorizontalAlignment="Left"
+                                       Padding="1"
+                                       Background="Transparent"
+                                       Text="{Binding FieldName, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged, TargetNullValue='Click To Add New Mapping', FallbackValue='Click To Add New Mapping'}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Translation Field">
+
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Width="200"
+                                       HorizontalAlignment="Left"
+                                       Padding="1"
+                                       Background="Transparent"
+                                       Text="{Binding TranslationName, Mode=TwoWay,NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </StackPanel>
+
 </Window>
